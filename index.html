@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A modern, beautifully crafted To-Do and Task Management application built with vanilla HTML, CSS, and JavaScript.">
+  <title>TaskPulse — Modern Task Flow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background lighting effects -->
+  <div class="ambient-glow glow-top-left" aria-hidden="true"></div>
+  <div class="ambient-glow glow-top-right" aria-hidden="true"></div>
+  <div class="ambient-glow glow-bottom-center" aria-hidden="true"></div>
+
+  <div class="app-layout">
+    <!-- Header Section -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo-wrapper">
+          <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="app-title">TaskPulse</h1>
+            <p class="greeting-subtitle" id="greeting-text">Focus on what matters today</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="sound-toggle-btn" class="icon-action-btn" title="Toggle audio feedback" aria-label="Toggle sound effects">
+          <svg id="sound-icon-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+          <svg id="sound-icon-off" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+        <div class="date-badge" id="current-date-badge">
+          Today
+        </div>
+      </div>
+    </header>
+
+    <!-- Overview Statistics Dashboard -->
+    <section class="stats-card" aria-label="Task progress summary">
+      <div class="stats-info">
+        <div class="stat-group">
+          <span class="stat-label">Progress</span>
+          <div class="stat-numbers">
+            <span class="stat-highlight" id="completed-count">0</span>
+            <span class="stat-separator">/</span>
+            <span class="stat-total" id="total-count">0</span>
+            <span class="stat-subtext">tasks completed</span>
+          </div>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="progress-bar" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <div class="progress-circle-wrap">
+        <svg class="progress-ring" width="68" height="68" viewBox="0 0 68 68">
+          <circle class="progress-ring-bg" stroke="rgba(255, 255, 255, 0.08)" stroke-width="6" fill="transparent" r="28" cx="34" cy="34" />
+          <circle class="progress-ring-circle" id="progress-circle" stroke="#6366f1" stroke-width="6" stroke-linecap="round" fill="transparent" r="28" cx="34" cy="34" />
+        </svg>
+        <span class="progress-percent" id="progress-percentage">0%</span>
+      </div>
+    </section>
+
+    <!-- Task Creator Form -->
+    <section class="creator-card">
+      <form id="task-form" autocomplete="off">
+        <div class="input-primary-row">
+          <div class="input-icon-wrapper">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+          </div>
+          <input 
+            type="text" 
+            id="task-input" 
+            placeholder="Add a new task (press Enter to save)..." 
+            required 
+            maxlength="150"
+            aria-label="New task title"
+          />
+          <button type="submit" id="add-task-btn" class="primary-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add Task</span>
+          </button>
+        </div>
+
+        <!-- Task Metadata Options -->
+        <div class="task-options-row">
+          <div class="meta-field">
+            <label for="priority-select">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              Priority:
+            </label>
+            <select id="priority-select" aria-label="Task priority">
+              <option value="low">Low Priority</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High Priority</option>
+            </select>
+          </div>
+
+          <div class="meta-field">
+            <label for="category-select">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+              </svg>
+              Category:
+            </label>
+            <select id="category-select" aria-label="Task category">
+              <option value="work">💼 Work</option>
+              <option value="personal">🌱 Personal</option>
+              <option value="study">📚 Study</option>
+              <option value="fitness">⚡ Fitness</option>
+              <option value="general" selected>📌 General</option>
+            </select>
+          </div>
+
+          <div class="meta-field">
+            <label for="due-date-input">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              Due Date:
+            </label>
+            <input type="date" id="due-date-input" aria-label="Task due date">
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Toolbar: Search, Filters & Actions -->
+    <div class="tasks-toolbar">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="search-input" placeholder="Search tasks..." aria-label="Search through your tasks">
+        <button id="clear-search-btn" class="clear-search-btn hidden" title="Clear search" aria-label="Clear search input">
+          &times;
+        </button>
+      </div>
+
+      <div class="filters-container">
+        <div class="status-tabs" role="tablist" aria-label="Filter tasks by status">
+          <button class="tab-btn active" id="filter-all" data-filter="all" role="tab" aria-selected="true">
+            All <span class="tab-badge" id="badge-all">0</span>
+          </button>
+          <button class="tab-btn" id="filter-active" data-filter="active" role="tab" aria-selected="false">
+            Active <span class="tab-badge" id="badge-active">0</span>
+          </button>
+          <button class="tab-btn" id="filter-completed" data-filter="completed" role="tab" aria-selected="false">
+            Completed <span class="tab-badge" id="badge-completed">0</span>
+          </button>
+        </div>
+
+        <div class="filter-dropdown-wrap">
+          <select id="filter-category" class="filter-select" aria-label="Filter by category">
+            <option value="all">All Categories</option>
+            <option value="work">💼 Work</option>
+            <option value="personal">🌱 Personal</option>
+            <option value="study">📚 Study</option>
+            <option value="fitness">⚡ Fitness</option>
+            <option value="general">📌 General</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task List Container -->
+    <main class="tasks-section" aria-label="Task items list">
+      <ul class="task-list" id="task-list">
+        <!-- Rendered dynamically via JavaScript -->
+      </ul>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state hidden">
+        <div class="empty-illustration">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <h3 id="empty-state-title" class="empty-title">All tasks completed!</h3>
+        <p id="empty-state-desc" class="empty-desc">Enjoy your free time or add a new goal above to stay ahead.</p>
+        <button id="add-sample-tasks-btn" class="secondary-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+          Load sample tasks
+        </button>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="tasks-footer" id="tasks-footer">
+        <div class="footer-left">
+          <span id="items-left-count" class="items-left-text">0 items remaining</span>
+        </div>
+        <div class="footer-actions">
+          <button id="clear-completed-btn" class="text-action-btn" title="Remove all completed tasks">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Clear Completed
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Toast Notification Overlay -->
+    <div id="toast" class="toast hidden" role="status" aria-live="polite">
+      <span class="toast-icon">✨</span>
+      <span class="toast-message" id="toast-message">Task updated!</span>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
